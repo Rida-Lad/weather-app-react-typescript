@@ -1,12 +1,31 @@
 import { useState } from "react";
+import type { WeatherData } from "./types";
+
+const API_KEY = "cfc01cb49f5a47cd9920deeca4bc75a5";
 
 function App() {
   const [city, setCity] = useState<string>("");
-  const [weatherData, setWeatherData] = useState<any>(null); // we'll type it properly later
+  const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
 
-  const handleSearch = () => {
-    console.log("Searching weather for:", city);
-    // We'll fetch API data here in the next step
+  const handleSearch = async () => {
+    if (!city.trim()) return;
+
+    try {
+      const response = await fetch(
+        `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`
+      );
+
+      if (!response.ok) {
+        throw new Error("City not found");
+      }
+
+      const data: WeatherData = await response.json();
+      setWeatherData(data);
+    } catch (error) {
+      console.error("Error fetching weather:", error);
+      setWeatherData(null);
+      alert("Could not find weather for that city.");
+    }
   };
 
   return (
@@ -30,10 +49,18 @@ function App() {
       </div>
 
       {weatherData && (
-        <div className="bg-white/20 backdrop-blur-md p-6 rounded-xl text-white shadow-lg">
-          {/* We'll display weather info here */}
-          <h2 className="text-2xl font-bold">{weatherData.name}</h2>
-          {/* add more data here later */}
+        <div className="bg-white/20 backdrop-blur-md p-6 rounded-xl text-white shadow-lg text-center">
+          <h2 className="text-3xl font-bold">{weatherData.name}</h2>
+          <p className="text-xl capitalize">{weatherData.weather[0].description}</p>
+          <p className="text-5xl font-bold">{weatherData.main.temp}°C</p>
+          <p>Humidity: {weatherData.main.humidity}%</p>
+          <p>Wind: {weatherData.wind.speed} m/s</p>
+          <div className="flex justify-center mt-4">
+            <img
+              src={`https://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png`}
+              alt="Weather icon"
+            />
+          </div>
         </div>
       )}
     </div>
