@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { WeatherData } from "./types";
 
-const API_KEY = "cfc01cb49f5a47cd9920deeca4bc75a5";
+const API_KEY = "cfc01cb49f5a47cd9920deeca4bc75a5"; // I used my own API key here and I did deactivate it btw. You can get your own from https://openweathermap.org/api
 
 function App() {
   const [city, setCity] = useState<string>("");
